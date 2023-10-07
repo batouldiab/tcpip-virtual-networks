@@ -26,6 +26,45 @@ public class Host extends UnicastRemoteObject implements IHost {
 		
 	}
 
+    @Override
+	public String register(IHost host) throws RemoteException {
+
+		Random r = new Random();
+		String ip = r.nextInt(256) + "." + r.nextInt(256) + "." + r.nextInt(256) + "." + r.nextInt(256);
+		try {
+			InetAddress selfIP = InetAddress.getByName(ip);
+			return "success";
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
+	public static String connectToRouter() throws MalformedURLException, RemoteException, NotBoundException {
+		Scanner input = new Scanner(System.in);
+		String routerip = "";
+		System.out.println("Enter the router ip:\n"); // this is usually done using hardware connections
+		routerip = input.next();
+		try {
+			connectedRouter = InetAddress.getByName(routerip);
+			// rmi connect to register host in router
+			look_up = (IRouter) Naming.lookup("//localhost/MyRouter" + connectedRouter);
+			String response = look_up.hostConnect(selfIP);
+
+			return "success";
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public static void migrate(Packet p) {
+
+	}
+
 	@SuppressWarnings({ "deprecation", "resource" })
 	public static void main(String args[]) {
 		System.setSecurityManager(new RMISecurityManager());
